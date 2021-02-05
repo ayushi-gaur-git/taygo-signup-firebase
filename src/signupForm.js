@@ -10,7 +10,13 @@ import Hidden from '@material-ui/core/Hidden';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import {firestore} from './firebase/firebase';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default function SignupForm() {
   const [state, setState] = React.useState({
@@ -34,8 +40,35 @@ export default function SignupForm() {
     phone: errorState.phone ? "Phone Number is Required" : <span>&#8203;</span>,
   }
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
+
+  const resetState = () => {
+    setState({
+      fName: "",
+      lName: "",
+      email: "",
+      phone: ""
+    });
+    setErrorState({
+      fName: false,
+      lName: false,
+      email: false,
+      phone: false
+    });
+  }
+
   const handleSubmit = async () => {
-    // console.log(Object.keys(state))
     if(Object.keys(state).filter(ob => state[ob] == "").length > 0) {
       setErrorState({
         fName: state.fName == "" ? true : false,
@@ -44,12 +77,12 @@ export default function SignupForm() {
         phone: state.phone == "" ? true : false,
       })
     } else {
-      console.log("submit");
       await firestore.collection('users').add({firstName: state.fName,
                                         lastName: state.lName,
                                         email: state.email,
                                         phone: state.phone});
-      alert(`Created a new user`);
+      handleClick();
+      resetState();
     }
   }
 
@@ -158,5 +191,10 @@ export default function SignupForm() {
         Already a member? <a>Sign In</a>
       </Typography>
     </Grid>
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+          Signup Successful!
+        </Alert>
+    </Snackbar>
   </div>
 }
