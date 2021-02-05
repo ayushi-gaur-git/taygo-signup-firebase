@@ -1,0 +1,66 @@
+.bg-img {
+    background-image: url("https://business-assets.taygo.com/Graphics-side@3x.c2dc13d818ac3019678307642a71d2b7.svg");
+    background-repeat: no-repeat;
+    height: 100vh;
+    background-position-x: right;
+    background-size: 80%;
+    background-position-y: 11vh;
+}
+.form-container {
+    width: 80%;
+    margin: auto;
+    padding: 40px;
+    color: #1A2233;
+}
+.form-container .MuiGrid-item {
+    padding: 8px;
+}
+.form-container .MuiTextField-root {
+    width: 100%;
+    padding-bottom: 20px;
+}
+.img-container {
+  background-color: #4291e6;
+  color: #fff;
+}
+.form-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.submit-btn .MuiButton-root {
+  width: 100%;
+  background: #42E697;
+  color: white;
+  text-transform: none;
+  font-size: 1.25rem;
+}
+.submit-btn .MuiButton-root:hover {
+  background: #42E697;
+}
+.muted {
+  color: #81868F;
+}
+a {
+    color: #4291e6;
+    text-decoration: none;
+}
+.form-container svg {
+    color: #CDD3DB;
+    margin-bottom: 4px;
+}
+.form-container label.Mui-focused:not(.Mui-error) {
+  color: #42e697;
+}
+.form-container .MuiInput-underline:after {
+    border-bottom: 2px solid #42E697;
+}
+.form-container .Mui-focused:not(.Mui-error) svg {
+  color: #42e697;
+}
+.form-container label:not(.Mui-error) {
+    color: #555;
+}
+.Mui-error svg {
+    color: #e53935;
+}
