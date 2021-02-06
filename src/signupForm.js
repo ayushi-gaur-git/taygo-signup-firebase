@@ -14,6 +14,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import {firestore} from './firebase/firebase';
 
+import { signupCodec } from './utils/codecs/email.ts'
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -69,6 +71,16 @@ export default function SignupForm() {
   }
 
   const handleSubmit = async () => {
+     // io-ts uses and it has a success and failure type which are right and left
+     // This can be checked in the check as:
+     // if (auth._tag == "Left") // failure
+     // You can also use isRight to check if the success or failure
+     // import { isRight } from 'fp-ts/Either'
+    const check = signupCodec.decode({
+      email: state.email
+    })
+    console.log("check", check)
+
     if(Object.keys(state).filter(ob => state[ob] == "").length > 0) {
       setErrorState({
         fName: state.fName == "" ? true : false,
