@@ -14,7 +14,9 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import {firestore} from './firebase/firebase';
 
-import { signupCodec } from './utils/codecs/email.ts'
+import { signupCodec } from './utils/codecs/email.ts';
+import { nameCodec } from './utils/codecs/name.ts';
+import { phoneCodec } from './utils/codecs/phone.ts';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -29,18 +31,23 @@ export default function SignupForm() {
   });
 
   const [errorState, setErrorState] = React.useState({
-    fName: false,
-    lName: false,
-    email: false,
-    phone: false
+    fName: {
+      flag: false,
+      message: " "
+    },
+    lName: {
+      flag: false,
+      message: " "
+    },
+    email: {
+      flag: false,
+      message: " "
+    },
+    phone: {
+      flag: false,
+      message: " "
+    }
   });
-
-  let errorText = {
-    fName: errorState.fName ? "First Name is Required" : <span>&#8203;</span>,
-    lName: errorState.lName ? "Last Name is Required" : <span>&#8203;</span>,
-    email: errorState.email ? "Email is Required" : <span>&#8203;</span>,
-    phone: errorState.phone ? "Phone Number is Required" : <span>&#8203;</span>,
-  }
 
   const [open, setOpen] = React.useState(false);
 
@@ -63,10 +70,22 @@ export default function SignupForm() {
       phone: ""
     });
     setErrorState({
-      fName: false,
-      lName: false,
-      email: false,
-      phone: false
+        fName: {
+          flag: false,
+          message: " "
+        },
+        lName: {
+          flag: false,
+          message: " "
+        },
+        email: {
+          flag: false,
+          message: " "
+        },
+        phone: {
+          flag: false,
+          message: " "
+        }
     });
   }
 
@@ -76,19 +95,40 @@ export default function SignupForm() {
      // if (auth._tag == "Left") // failure
      // You can also use isRight to check if the success or failure
      // import { isRight } from 'fp-ts/Either'
-    const check = signupCodec.decode({
+    const email = signupCodec.decode({
       email: state.email
-    })
-    console.log("check", check)
+    });
+    const fName = nameCodec.decode({
+      name: state.fName
+    });
+    const lName = nameCodec.decode({
+      name: state.lName
+    });
+    const phone = phoneCodec.decode({
+      phone: state.phone
+    });
 
-    if(Object.keys(state).filter(ob => state[ob] == "").length > 0) {
-      setErrorState({
-        fName: state.fName == "" ? true : false,
-        lName: state.lName == "" ? true : false,
-        email: state.email == "" ? true : false,
-        phone: state.phone == "" ? true : false,
-      })
-    } else {
+    if(email.left || fName.left || phone.left || lName.left) {
+        setErrorState({
+          fName: {
+            message: fName.left ? "First "+fName.left[0].message : " ",
+            flag: fName.left ? true : false
+          },
+          lName: {
+            message: lName.left ? "Last "+lName.left[0].message : " ",
+            flag: lName.left ? true : false
+          },
+          email: {
+            message: email.left ? email.left[0].message : " ",
+            flag: email.left ? true : false
+          },
+          phone: {
+            message: phone.left ? phone.left[0].message : " ",
+            flag: phone.left ? true : false
+          }
+        })
+    }
+    else {
       await firestore.collection('users').add({firstName: state.fName,
                                         lastName: state.lName,
                                         email: state.email,
@@ -105,7 +145,10 @@ export default function SignupForm() {
     })
     setErrorState({
       ...errorState,
-      [e.target.name]: false
+      [e.target.name]: {
+        message: " ",
+        flag: false
+      }
     })
   }
 
@@ -124,8 +167,8 @@ export default function SignupForm() {
           name="fName"
           value={state.fName}
           onChange={handleChange}
-          error={errorState.fName}
-          helperText={errorText.fName}
+          error={errorState.fName.flag}
+          helperText={errorState.fName.message}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -142,8 +185,8 @@ export default function SignupForm() {
           name="lName"
           value={state.lName}
           onChange={handleChange}
-          error={errorState.lName}
-          helperText={errorText.lName}
+          error={errorState.lName.flag}
+          helperText={errorState.lName.message}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -161,8 +204,8 @@ export default function SignupForm() {
         name="email"
         value={state.email}
         onChange={handleChange}
-        error={errorState.email}
-        helperText={errorText.email}
+        error={errorState.email.flag}
+        helperText={errorState.email.message}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -179,8 +222,8 @@ export default function SignupForm() {
         name="phone"
         value={state.phone}
         onChange={handleChange}
-        error={errorState.phone}
-        helperText={errorText.phone}
+        error={errorState.phone.flag}
+        helperText={errorState.phone.message}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
